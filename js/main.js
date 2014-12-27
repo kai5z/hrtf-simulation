@@ -112,7 +112,6 @@ var v3d = {
 
         var glow_sphere = new THREE.Mesh( sphere_geometry.clone(), customMaterial.clone() );
         this.objects.glow_sphere = glow_sphere;
-        glow_sphere.position = glow_sphere.position;
         glow_sphere.scale.multiplyScalar(1.2);
         scene.add( glow_sphere );
     },
@@ -125,17 +124,13 @@ var v3d = {
         //scene.add(line);
         var line_material = new THREE.LineBasicMaterial({color: 0x445566, opacity: 0.2, transparent: true });
 
-        //Circles
-        var circle = new THREE.CircleGeometry(this.options.radius,64);
-        circle.vertices.shift();
-
         //Half circles
-        circle = new THREE.CircleGeometry(this.options.radius,64);
+        var circle = new THREE.CircleGeometry(this.options.radius,64);
         circle.vertices.shift();
         circle.vertices.splice(circle.vertices.length / 2 + 1);
 
-        var circle_line;
-        for(var delta = -Math.PI * (0.75); delta <= Math.PI * (0.75 + 0.03125); delta += 1.53125 * Math.PI / 50)
+        var circle_line, delta;
+        for(delta = -Math.PI * (0.75); delta <= Math.PI * (0.75 + 0.03125); delta += 1.53125 * Math.PI / 50)
         {
             circle_line = new THREE.Line(circle, line_material);
             circle_line.rotation.x = delta;
@@ -148,7 +143,7 @@ var v3d = {
         circle.vertices.splice(circle.vertices.length / 4 * 3 + 2);
 
         //Circles
-        for(var delta = -0.92; delta <= 0.92; delta += 0.08) {
+        for(delta = -0.92; delta <= 0.92; delta += 0.08) {
             circle_line = new THREE.Line(circle, line_material);
             circle_line.scale.x = Math.sqrt(1.0-delta*delta);
             circle_line.scale.y = circle_line.scale.x; //plane
