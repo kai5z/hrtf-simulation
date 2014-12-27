@@ -439,6 +439,8 @@ var hpl = {
     update_convolver: function() {
         if(!hpl.hrir_loaded) return;
         console.log(hpl.theta + "," + hpl.phi);
+        hpl.left = hpl.hrir_buffer.getChannelData(0);
+        hpl.right = hpl.hrir_buffer.getChannelData(1);
         if(hpl.hrir_l && hpl.hrir_r) {
             for (var k = 0; k < 200; k++) {
                 hpl.left[k] = hpl.hrir_l[hpl.theta][hpl.phi][k];
