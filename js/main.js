@@ -436,14 +436,10 @@ var hpl = {
         console.log(hpl.theta + "," + hpl.phi);
         hpl.left = hpl.hrir_buffer.getChannelData(0);
         hpl.right = hpl.hrir_buffer.getChannelData(1);
-
         if(hpl.hrir_l && hpl.hrir_r) {
-            var left = this.resampler.resampler(hpl.hrir_l[hpl.theta][hpl.phi]);
-            var right = this.resampler.resampler(hpl.hrir_r[hpl.theta][hpl.phi]);
-
-            for (var i = 0; i < hpl.hrir_buffer.length; i++) {
-                hpl.left[i] = left[i];
-                hpl.right[i] = right[i];
+            for (var k = 0; k < 200; k++) {
+                hpl.left[k] = hpl.hrir_l[hpl.theta][hpl.phi][k];
+                hpl.right[k] = hpl.hrir_r[hpl.theta][hpl.phi][k];
             }
         }
         console.log("Updated convolver");
@@ -453,7 +449,7 @@ var hpl = {
         {
             hpl.convolver = hpl.ctx.createConvolver();
 
-            hpl.hrir_buffer = hpl.ctx.createBuffer(2, hpl.hrir_length, this.ctx.sampleRate);
+            hpl.hrir_buffer = hpl.ctx.createBuffer(2, 200, this.Fs);
             hpl.left = hpl.hrir_buffer.getChannelData(0);
             hpl.right = hpl.hrir_buffer.getChannelData(1);
 
@@ -506,8 +502,6 @@ var hpl = {
     },
     init: function() {
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        this.hrir_length = Math.ceil(200 * this.ctx.sampleRate / this.Fs);
-        this.resampler = new Resampler(this.Fs, this.ctx.sampleRate, 1, this.hrir_length, false);
         this.gain = this.ctx.createGain();
         this.init_convolver();
         this.init_source('razor.ogg'); //Default
