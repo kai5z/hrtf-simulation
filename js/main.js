@@ -436,20 +436,30 @@ var hpl = {
         console.log(hpl.theta + "," + hpl.phi);
         hpl.left = hpl.hrir_buffer.getChannelData(0);
         hpl.right = hpl.hrir_buffer.getChannelData(1);
+
+        //Quick linear interpolation of the HRIR to the sample rate of the AudioContext
         if(hpl.hrir_l && hpl.hrir_r) {
-            for (var k = 0; k < 200; k++) {
-                hpl.left[k] = hpl.hrir_l[hpl.theta][hpl.phi][k];
-                hpl.right[k] = hpl.hrir_r[hpl.theta][hpl.phi][k];
+            var q, d, k_p, k_n;
+            for (var k = 0; k < this.hrir_length; k++) {
+                q = k / (1.0*this.hrir_length) * 200;
+                k_p = Math.floor(q);
+                k_n = Math.ceil(q);
+                d = q - k_p;
+
+                hpl.left[k] = hpl.hrir_l[hpl.theta][hpl.phi][k_p] * (1.0-d) + hpl.hrir_l[hpl.theta][hpl.phi][k_n] * d;
+                hpl.right[k] = hpl.hrir_r[hpl.theta][hpl.phi][k_p] * (1.0-d) + hpl.hrir_r[hpl.theta][hpl.phi][k_n] * d;
             }
         }
+
         console.log("Updated convolver");
     },
     init_convolver: function() {
+        this.hrir_length = Math.ceil(200.0 * this.ctx.sampleRate / this.Fs);
         if(!hpl.convolver)
         {
             hpl.convolver = hpl.ctx.createConvolver();
 
-            hpl.hrir_buffer = hpl.ctx.createBuffer(2, 200, this.Fs);
+            hpl.hrir_buffer = hpl.ctx.createBuffer(2, this.hrir_length, this.ctx.sampleRate);
             hpl.left = hpl.hrir_buffer.getChannelData(0);
             hpl.right = hpl.hrir_buffer.getChannelData(1);
 
